@@ -4,10 +4,12 @@
 (defun enclose (seq)
   (list* (first (last seq)) seq))
 
-(defun plot-problem (problem &key title)
+(defun plot-problem (problem &key (normalize t) title)
   (when (pathnamep problem)
-    (:= problem (normalize-problem (parse problem))
+    (:= problem (parse problem)
         title (or title (pathname-name problem))))
+  (when normalize
+    (:= problem (normalize-problem problem)))
   (when title
     (vgplot:title title))
   (dolist (cmd '("unset border"
