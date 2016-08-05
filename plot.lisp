@@ -30,10 +30,13 @@
                 :collect (mapcar #'py points)
                 :collect "r;"))))
 
-(defun plot-all (&key (glob #p"problems/*.txt") (start 0) end)
-  (dolist (path (subseq (directory glob) start end))
+(defun pathname-number (path)
+  (parse-integer (pathname-name path)))
+
+(defun plot-all (&key (glob #p"problems/*.txt") (start 0) end (delay 1))
+  (dolist (path (subseq (sort (directory glob) #'< :key #'pathname-number ) start end))
     (plot-problem path)
-    (sleep 5)))
+    (sleep delay)))
 
 (defun plot-solution (solution)
   (when (pathnamep solution)
