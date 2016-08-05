@@ -19,24 +19,29 @@
                  "set ytics 0.5"
                  "set size ratio -1"))
     (vgplot:format-plot t cmd))
-  (apply #'vgplot:plot '(0 1 1 0 0) '(0 0 1 1 0) "k;"
-         (concat
-          (loop :for segment :in (? problem :segments)
-                :for points = (coerce segment 'list)
-                :collect (mapcar #'px points)
-                :collect (mapcar #'py points)
-                :collect "b;")
-          (when points
+  (let* ((all-points (problem-points problem)))
+    (when points
+      (loop :for point :in all-points
+            :for k :from 0
+            :for s = (fmt "set label ~a \"~a\" at ~a, ~a"
+                          (1+ k) k (float (px point)) (float (py point)))
+            :do (vgplot:format-plot t s)))
+    (apply #'vgplot:plot '(0 1 1 0 0) '(0 0 1 1 0) "k;"
+           (concat
             (loop :for segment :in (? problem :segments)
                   :for points = (coerce segment 'list)
                   :collect (mapcar #'px points)
                   :collect (mapcar #'py points)
-                  :collect "ob;"))
-          (loop :for polygon :in (? problem :polygons)
-                :for points = (enclose (coerce polygon 'list))
-                :collect (mapcar #'px points)
-                :collect (mapcar #'py points)
-                :collect "r;"))))
+                  :collect "b;")
+            (when points
+              (list (mapcar #'px all-points)
+                    (mapcar #'py all-points)
+                    "ob;"))
+            (loop :for polygon :in (? problem :polygons)
+                  :for points = (enclose (coerce polygon 'list))
+                  :collect (mapcar #'px points)
+                  :collect (mapcar #'py points)
+                  :collect "r;")))))
 
 (defun pathname-number (path)
   (parse-integer (pathname-name path)))
