@@ -17,3 +17,16 @@
 
 (defun point- (p1 p2)
   (mapcar #'- p1 p2))
+
+(defun checked-isqrt (n)
+  (let ((q (isqrt n)))
+    (assert (= n (* q q)))
+    q))
+
+(defun rsqrt (r)
+  (/ (checked-isqrt (numerator r))
+     (checked-isqrt (denominator r))))
+
+(defun point-distance (p1 p2)
+  (rsqrt (+ (expt (- (px p1) (px p2)) 2)
+            (expt (- (py p1) (py p2)) 2))))
