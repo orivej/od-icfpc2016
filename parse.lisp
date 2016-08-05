@@ -1,6 +1,9 @@
 (in-package #:od-icfpc2016)
 (named-readtables:in-readtable rutils-readtable)
 
+(defvar *problems* #p"problems/")
+(defvar *solutions* #p"solutions/")
+
 (defmacro collect (cnt &body body)
   `(loop :repeat ,cnt :collect (progn ,@body)))
 
@@ -26,3 +29,21 @@
        :points points
        :facets (collect (read) (collect (read) (read)))
        :targets (collect (length points) (parse-point (read-line)))))))
+
+(defun ensure-problem (problem)
+  (etypecase problem
+    (integer
+     (parse (merge-pathnames (fmt "~a.txt" problem) *problems*)))
+    (pathname
+     (parse problem))
+    (problem
+     problem)))
+
+(defun ensure-solution (solution)
+  (etypecase solution
+    (integer
+     (parse-solution (merge-pathnames (fmt "~a.txt" solution) *solutions*)))
+    (pathname
+     (parse-solution solution))
+    (solution
+     solution)))

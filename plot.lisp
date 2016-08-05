@@ -2,9 +2,10 @@
 (named-readtables:in-readtable rutils-readtable)
 
 (defun plot-problem (problem &key (normalize t) translate (points nil) title)
-  (when (pathnamep problem)
-    (:= problem (parse problem)
-        title (or title (pathname-name problem))))
+  (:= title (or title (typecase problem
+                        (pathname (pathname-name problem))
+                        (integer (fmt "~a" problem)))))
+  (ensure-problem!)
   (when normalize
     (:= problem (normalize-problem problem)))
   (when translate
@@ -46,8 +47,7 @@
     (sleep delay)))
 
 (defun plot-solution (solution)
-  (when (pathnamep solution)
-    (:= solution (parse-solution solution)))
+  (ensure-solution!)
   (apply #'vgplot:plot
          (loop :for facet :in (? solution :facets)
                :for points = (enclose (mapcar #`(? solution :points %) facet))
