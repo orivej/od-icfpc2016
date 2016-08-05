@@ -2,5 +2,7 @@
   :depends-on (rutilsx let-plus vgplot)
   :serial t
   :components ((:file "package")
-               (:file "main")
-               (:file "plot")))
+               (:file "types")
+               (:file "parse")
+               (:file "plot")
+               (:file "main")))

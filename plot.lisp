@@ -34,3 +34,6 @@
   (dolist (path (subseq (directory glob) start end))
     (plot-path path)
     (sleep 5)))
+
+(defun print-points (points)
+  (format t "~:{~a,~a~%~}" points))
