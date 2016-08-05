@@ -15,3 +15,11 @@
     (make-problem
      :polygons (collect (read) (read-polygon))
      :segments (collect (read) (parse-segment (read-line))))))
+
+(defun parse-solution (path)
+  (with-open-file (*standard-input* path)
+    (let ((points (read-polygon)))
+      (make-solution
+       :points points
+       :facets (collect (read) (collect (read) (read)))
+       :targets (collect (length points) (parse-point (read-line)))))))

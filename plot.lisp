@@ -1,7 +1,13 @@
 (in-package #:od-icfpc2016)
 (named-readtables:in-readtable rutils-readtable)
 
+(defun enclose (seq)
+  (list* (first (last seq)) seq))
+
 (defun plot-problem (problem &key title)
+  (when (pathnamep problem)
+    (:= problem (normalize-problem (parse problem))
+        title (or title (pathname-name problem))))
   (when title
     (vgplot:title title))
   (dolist (cmd '("unset border"
@@ -15,25 +21,26 @@
          (concat
           (loop :for segment :in (? problem :segments)
                 :for points = (coerce segment 'list)
-                :collect (mapcar #'point-x points)
-                :collect (mapcar #'point-y points)
+                :collect (mapcar #'px points)
+                :collect (mapcar #'py points)
                 :collect "b;")
           (loop :for polygon :in (? problem :polygons)
-                :for points = (list* (? polygon (1- (length polygon)))
-                                     (coerce polygon 'list))
-                :collect (mapcar #'point-x points)
-                :collect (mapcar #'point-y points)
+                :for points = (enclose (coerce polygon 'list))
+                :collect (mapcar #'px points)
+                :collect (mapcar #'py points)
                 :collect "r;"))))
-
-(defun plot-path (path)
-  (-> (parse path)
-      (normalize-problem)
-      (plot-problem :title (pathname-name path))))
 
 (defun plot-all (&key (glob #p"problems/*.txt") (start 0) end)
   (dolist (path (subseq (directory glob) start end))
-    (plot-path path)
+    (plot-problem path)
     (sleep 5)))
 
-(defun print-points (points)
-  (format t "~:{~a,~a~%~}" points))
+(defun plot-solution (solution)
+  (when (pathnamep solution)
+    (:= solution (parse-solution solution)))
+  (apply #'vgplot:plot
+         (loop :for facet :in (? solution :facets)
+               :for points = (enclose (mapcar #`(? solution :points %) facet))
+               :collect (mapcar #'px points)
+               :collect (mapcar #'py points)
+               :collect "k;")))

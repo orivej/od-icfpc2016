@@ -3,6 +3,8 @@
 
 (defstruct problem polygons segments)
 
+(defstruct solution points facets targets)
+
 (defmacro collect (cnt &body body)
   `(loop :repeat ,cnt :collect (progn ,@body)))
 

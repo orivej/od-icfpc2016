@@ -16,3 +16,6 @@
   (-> (apply #'concat (? problem :segments))
       (delete-duplicates :test #'equal)
       (sort #'point<)))
+
+(defun print-points (points)
+  (format t "~:{~a,~a~%~}" points))
