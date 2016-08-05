@@ -4,7 +4,7 @@
 (defun enclose (seq)
   (list* (first (last seq)) seq))
 
-(defun plot-problem (problem &key (normalize t) title)
+(defun plot-problem (problem &key (normalize t) (points nil) title)
   (when (pathnamep problem)
     (:= problem (parse problem)
         title (or title (pathname-name problem))))
@@ -26,6 +26,12 @@
                 :collect (mapcar #'px points)
                 :collect (mapcar #'py points)
                 :collect "b;")
+          (when points
+            (loop :for segment :in (? problem :segments)
+                  :for points = (coerce segment 'list)
+                  :collect (mapcar #'px points)
+                  :collect (mapcar #'py points)
+                  :collect "ob;"))
           (loop :for polygon :in (? problem :polygons)
                 :for points = (enclose (coerce polygon 'list))
                 :collect (mapcar #'px points)
