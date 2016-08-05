@@ -41,10 +41,12 @@
 (defun plot-problem (problem &key title)
   (when title
     (vgplot:title title))
-  (vgplot:axis (list -1.5 1.5 -1.5 1.5))
-  (vgplot:format-plot t "set xtics 0.5")
-  (vgplot:format-plot t "set ytics 0.5")
-  (vgplot:format-plot t "set size ratio -1")
+  (dolist (cmd '("set xrange [-1.5:1.5]"
+                 "set yrange [-1.5:1.5]"
+                 "set xtics 0.5"
+                 "set ytics 0.5"
+                 "set size ratio -1"))
+    (vgplot:format-plot t cmd))
   (apply #'vgplot:plot '(0 1 1 0 0) '(0 0 1 1 0) "k;"
          (concat
           (loop :for segment :in (? problem :segments)
