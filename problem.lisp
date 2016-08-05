@@ -3,8 +3,6 @@
 
 (defstruct problem polygons segments)
 
-(defstruct solution points facets targets)
-
 (defun translate-problem (problem point)
   (make-problem
    :polygons (->> (? problem :polygons)

@@ -4,6 +4,7 @@
   :components ((:file "package")
                (:file "point")
                (:file "problem")
+               (:file "solution")
                (:file "parse")
                (:file "plot")
                (:file "rotate")))

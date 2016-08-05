@@ -1,9 +1,6 @@
 (in-package #:od-icfpc2016)
 (named-readtables:in-readtable rutils-readtable)
 
-(defun enclose (seq)
-  (list* (first (last seq)) seq))
-
 (defun plot-problem (problem &key (normalize t) translate (points nil) title)
   (when (pathnamep problem)
     (:= problem (parse problem)
@@ -13,7 +10,7 @@
   (when translate
     (:= problem (translate-problem problem translate)))
   (when title
-    (vgplot:title title))
+    (vgplot:title title :replot nil))
   (dolist (cmd '("unset border"
                  "set xrange [-1.5:1.5]"
                  "set yrange [-1.5:1.5]"

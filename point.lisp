@@ -1,6 +1,9 @@
 (in-package #:od-icfpc2016)
 (named-readtables:in-readtable rutils-readtable)
 
+(defun enclose (seq)
+  (list* (first (last seq)) seq))
+
 (defun p (x y) (list x y))
 (defun px (p) (first p))
 (defun py (p) (second p))
@@ -45,6 +48,8 @@
                    (dot-product d d))))
     (point+ p0 (point* d scale))))
 
-(defun reflect-point (p segment)
-  (let ((pr (project-point p segment)))
-    (point- (point* pr 2) p)))
+(defun reflect-point-wrt-point (p q)
+  (point- (point* q 2) p))
+
+(defun reflect-point-wrt-segment (p segment)
+  (reflect-point-wrt-point p (project-point p segment)))
