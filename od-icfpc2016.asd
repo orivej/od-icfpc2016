@@ -5,4 +5,5 @@
                (:file "types")
                (:file "parse")
                (:file "plot")
+               (:file "rotate")
                (:file "main")))
