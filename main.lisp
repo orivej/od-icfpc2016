@@ -21,8 +21,12 @@
      :polygons (collect (read) (read-polygon))
      :segments (collect (read) (parse-segment (read-line))))))
 
-(defun point-x (p) (first p))
-(defun point-y (p) (second p))
+(defun px (p) (first p))
+(defun py (p) (second p))
+(defun point< (p1 p2)
+  (if (= (py p1) (py p2))
+      (< (px p1) (px p2))
+      (< (py p1) (py p2))))
 
 (defun point- (p1 p2)
   (mapcar #'- p1 p2))
@@ -37,3 +41,8 @@
                     (mapcar #`(polygon-point- % origin)))
      :segments (->> (? problem :segments)
                     (mapcar #`(polygon-point- % origin))))))
+
+(defun problem-points (problem)
+  (-> (apply #'concat (? problem :segments))
+      (delete-duplicates :test #'equal)
+      (sort #'point<)))
