@@ -15,8 +15,11 @@
       (< (px p1) (px p2))
       (< (py p1) (py p2))))
 
-(defun point- (p1 p2)
-  (mapcar #'- p1 p2))
+(defun point+ (&rest ps)
+  (apply #'mapcar #'+ ps))
+
+(defun point- (p1 &rest ps)
+  (apply #'mapcar #'- p1 ps))
 
 (defun checked-isqrt (n)
   (let ((q (isqrt n)))
