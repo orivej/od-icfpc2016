@@ -1,6 +1,9 @@
 (in-package #:od-icfpc2016)
 (named-readtables:in-readtable rutils-readtable)
 
+(defmacro collect (cnt &body body)
+  `(loop :repeat ,cnt :collect (progn ,@body)))
+
 (defun parse-point (s)
   (mapcar #'read-from-string (split #\, s)))
 

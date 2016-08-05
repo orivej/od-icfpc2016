@@ -1,8 +1,9 @@
 (in-package #:od-icfpc2016)
 (named-readtables:in-readtable rutils-readtable)
 
-(defun polygon-point+ (polygon point)
-  (map 'vector #`(point+ % point) polygon))
+(defstruct problem polygons segments)
+
+(defstruct solution points facets targets)
 
 (defun translate-problem (problem point)
   (make-problem

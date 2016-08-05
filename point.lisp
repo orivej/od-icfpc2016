@@ -1,13 +1,6 @@
 (in-package #:od-icfpc2016)
 (named-readtables:in-readtable rutils-readtable)
 
-(defstruct problem polygons segments)
-
-(defstruct solution points facets targets)
-
-(defmacro collect (cnt &body body)
-  `(loop :repeat ,cnt :collect (progn ,@body)))
-
 (defun p (x y) (list x y))
 (defun px (p) (first p))
 (defun py (p) (second p))
@@ -24,6 +17,9 @@
 
 (defun point* (p scale)
   (mapcar #`(* % scale) p))
+
+(defun polygon-point+ (polygon point)
+  (map 'vector #`(point+ % point) polygon))
 
 (defun checked-isqrt (n)
   (let ((q (isqrt n)))
