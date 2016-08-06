@@ -4,6 +4,12 @@
 (defvar *problems* #p"problems/")
 (defvar *solutions* #p"solutions/")
 
+(defun problem-path (n)
+  (merge-pathnames (fmt "~a.txt" n) *problems*))
+
+(defun solution-path (n)
+  (merge-pathnames (fmt "~a.txt" n) *solutions*))
+
 (defmacro collect (cnt &body body)
   `(loop :repeat ,cnt :collect (progn ,@body)))
 
@@ -33,7 +39,7 @@
 (defun ensure-problem (problem)
   (etypecase problem
     (integer
-     (parse (merge-pathnames (fmt "~a.txt" problem) *problems*)))
+     (parse (problem-path problem)))
     (pathname
      (parse problem))
     (problem
@@ -42,8 +48,20 @@
 (defun ensure-solution (solution)
   (etypecase solution
     (integer
-     (parse-solution (merge-pathnames (fmt "~a.txt" solution) *solutions*)))
+     (parse-solution (solution-path solution)))
     (pathname
      (parse-solution solution))
     (solution
      solution)))
+
+(defun save-solution (solution path)
+  (ensure-solution!)
+  (when (integerp path)
+    (:= path (solution-path path)))
+  (with-open-file (*standard-output* path :direction :output :if-exists :supersede)
+    (format t "~a~%" (length (? solution :points)))
+    (print-points (? solution :points))
+    (format t "~a~%" (length (? solution :facets)))
+    (dolist (facet (? solution :facets))
+      (format t "~a~{ ~a~}~%" (length facet) facet))
+    (print-points (? solution :targets))))
