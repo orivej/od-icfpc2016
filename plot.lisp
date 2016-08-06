@@ -1,6 +1,15 @@
 (in-package #:od-icfpc2016)
 (named-readtables:in-readtable rutils-readtable)
 
+(defun setup-plot ()
+  (dolist (cmd '("unset border"
+                 "set xrange [-1.5:1.5]"
+                 "set yrange [-1.5:1.5]"
+                 "set xtics 0.5"
+                 "set ytics 0.5"
+                 "set size ratio -1"))
+    (vgplot:format-plot t cmd)))
+
 (defun plot-problem (problem &key (normalize t) translate (points nil) title)
   (:= title (or title (typecase problem
                         (pathname (pathname-name problem))
@@ -10,16 +19,10 @@
     (:= problem (normalize-problem problem)))
   (when translate
     (:= problem (translate-problem problem translate)))
+  (setup-plot)
   (when title
     (vgplot:title title :replot nil))
-  (dolist (cmd '("unset border"
-                 "set xrange [-1.5:1.5]"
-                 "set yrange [-1.5:1.5]"
-                 "set xtics 0.5"
-                 "set ytics 0.5"
-                 "set size ratio -1"))
-    (vgplot:format-plot t cmd))
-  (let* ((all-points (problem-points problem)))
+  (let* ((all-points (all-problem-points problem)))
     (when points
       (loop :for point :in all-points
             :for k :from 0
@@ -33,10 +36,6 @@
                   :collect (mapcar #'px points)
                   :collect (mapcar #'py points)
                   :collect "b;")
-            (when points
-              (list (mapcar #'px all-points)
-                    (mapcar #'py all-points)
-                    "ob;"))
             (loop :for polygon :in (? problem :polygons)
                   :for points = (enclose (coerce polygon 'list))
                   :collect (mapcar #'px points)
@@ -59,3 +58,17 @@
                :collect (mapcar #'px points)
                :collect (mapcar #'py points)
                :collect "k;")))
+
+(defun plot-solution-points (solution)
+  (ensure-solution!)
+  (setup-plot)
+  (let ((points (? solution :points)))
+    (loop :for point :in points
+          :for k :from 0
+          :for s = (fmt "set label ~a \"~a\" at ~a, ~a"
+                        (1+ k) k (float (px point)) (float (py point)))
+          :do (vgplot:format-plot t s))
+    (vgplot:plot
+     (mapcar #'px points)
+     (mapcar #'py points)
+     "+b;")))

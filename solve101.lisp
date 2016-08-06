@@ -1,0 +1,7 @@
+(defparameter s (problem->solution 101))
+(solution-reflect-points s '(13) '(17 20))
+(solution-reflect-points s '(13 17 18 19 20 3) '(1 7))
+(solution-reflect-points s '(21 2) '(0 7))
+(solution-reflect-points s '(9 2) '(21 0))
+(solution-reflect-points s '(10 3 18 19 20) '(13 17))
+(solution-reflect-points s '(15 14 22 23 24) '(10 9))
