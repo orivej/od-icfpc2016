@@ -14,12 +14,12 @@
   (coerce (mapcar #'parse-point (split #\Space s)) 'vector))
 
 (defun read-polygon ()
-  (coerce (collect (read) (parse-point (read-line))) 'vector))
+  (collect (read) (parse-point (read-line))))
 
 (defun parse (path)
   (with-open-file (*standard-input* path)
     (make-problem
-     :polygons (collect (read) (read-polygon))
+     :polygons (collect (read) (coerce (read-polygon) 'vector))
      :segments (collect (read) (parse-segment (read-line))))))
 
 (defun parse-solution (path)

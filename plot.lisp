@@ -52,6 +52,7 @@
 
 (defun plot-solution (solution)
   (ensure-solution!)
+  (setup-plot)
   (apply #'vgplot:plot
          (loop :for facet :in (? solution :facets)
                :for points = (enclose (mapcar #`(? solution :points %) facet))

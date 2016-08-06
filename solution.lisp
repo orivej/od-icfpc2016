@@ -45,3 +45,51 @@
       (:= points (concat points new-points)
           targets (concat targets new-targets))
       (range start (length points)))))
+
+(defun make-segment-ifacet-hash-table (facets)
+  (let ((ht (make-hash-table :test 'equal))
+        (facets (coerce facets 'vector)))
+    (iter
+      (:for facet :in-vector facets :with-index k)
+      (iter
+        (:for (ip1 ip2) :on (enclose facet))
+        (:while ip2)
+        (:= (? ht `(,ip1 ,ip2)) k)))
+    ht))
+
+(defun solution-fill-targets (solution &key debug (start 0))
+  (let* ((points (coerce (? solution :points) 'vector))
+         (facets (coerce (? solution :facets) 'vector))
+         (targets (make-array (length points) :initial-element nil))
+         (segment-ifacet (make-segment-ifacet-hash-table facets))
+         (ifacet-pov (make-array (length facets) :initial-element nil)))
+    (labels
+        ((visited? (ifacet)
+           (not (null (? ifacet-pov ifacet))))
+         (recur (ifacet)
+           (let ((facet (? facets ifacet))
+                 (ps (? ifacet-pov ifacet)))
+             (when debug (print (list 'facet ifacet
+                                      'ips facet
+                                      'at (mapcar #`(? ps %) facet))))
+             (iter
+               (:for ip :in facet)
+               (:for old-target = (? targets ip))
+               (:for new-target = (? ps ip))
+               (if (null old-target)
+                   (:= (? targets ip) new-target)
+                   (assert (equal old-target new-target)
+                           () "Inconsistent solution. Will not move point ~a from ~a to ~a"
+                           ip old-target new-target)))
+             (iter
+               (:for (ip1 ip2) :on (enclose facet))
+               (:while ip2)
+               (:for segment-ips = (list ip2 ip1))
+               (:for segment = (vector (? ps ip1) (? ps ip2)))
+               (:for next-ifacet = (? segment-ifacet segment-ips))
+               (when (and next-ifacet (not (visited? next-ifacet)))
+                 (:= (? ifacet-pov next-ifacet) (reflect-points-wrt-segment ps segment))
+                 (recur next-ifacet))))))
+      (:= (? ifacet-pov start) points)
+      (recur start))
+    (:= (solution-targets solution) (coerce targets 'list))))

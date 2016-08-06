@@ -53,3 +53,6 @@
 
 (defun reflect-point-wrt-segment (p segment)
   (reflect-point-wrt-point p (project-point p segment)))
+
+(defun reflect-points-wrt-segment (ps segment)
+  (map 'vector #`(reflect-point-wrt-segment % segment) ps))
