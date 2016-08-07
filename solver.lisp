@@ -36,8 +36,8 @@
          ((p1 p2) segment)
          (fwd (point- p2 p1))
          ;; sides: -1 left, 0 on, 1 right
-         (sides (map 'vector #`(signum (cross-product (point- % p1) fwd)) targets)))
-    points
+         (sides (map 'vector #`(signum (cross-product (point- % p1) fwd)) targets))
+         (progress? nil))
     (iter
       (:for facet :in-sequence facets :with-index ifacet)
       (when (and (some #`(= -1 (? sides %)) facet)
@@ -73,4 +73,21 @@
     (iter
       (:for side :in-vector sides :with-index k)
       (when (= side 1)
-        (:= #1=(? targets k) (reflect-point-wrt-segment #1# segment))))))
+        (:= progress? t)
+        (:= #1=(? targets k) (reflect-point-wrt-segment #1# segment))))
+    progress?))
+
+(defun solve-problem (problem)
+  (ensure-problem!)
+  (assert (convex-problem? problem))
+  (let ((solution (new-solution))
+        (progress? t))
+    (iter
+      (:while progress?)
+      (:= progress? nil)
+      (iter
+        (:for (p1 p2) :on (enclose (? problem :polygons 0)))
+        (:while p2)
+        (when (solution-fold-left solution (list p1 p2))
+          (:= progress? t))))
+    solution))
