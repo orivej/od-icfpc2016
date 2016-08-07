@@ -86,9 +86,32 @@
                  (:find p2 :max (point-distance2 p1 p2))))
     (:find (list p1 p2) :max (point-distance2 p1 p2))))
 
-(defun unit-square-bound (points)
-  (let* ((center (point* (apply #'point+ points)
-                         (/ (length points)))))
+(defun unit-square-bound (polygon)
+  (iter
+    (:for (p1 p2) :on (enclose polygon))
+    (:while p2)
+    (when-let (pd (point-distance? p1 p2))
+      (:for segment = (list p1 p2))
+      (:for p0 = (point- p2 p1))
+      (iter
+        (:for p :in polygon)
+        (:for pr = (project-point p segment))
+        (:for scale = (point/ (point- pr p1) p0))
+        (:find p :min scale :into min-p)
+        (:find pr :min scale :into min-pr)
+        (:find pr :max scale :into max-pr)
+        (:finally
+          (when (<= (point-distance2 min-pr max-pr) 1)
+            (let* ((delta-fwd (point* p0 (/ pd)))
+                   (delta-left (p (- (py delta-fwd)) (px delta-fwd)))
+                   (delta-diag (point+ delta-fwd delta-left)))
+              (return-from unit-square-bound (list min-pr
+                                                   (point+ min-pr delta-fwd)
+                                                   (point+ min-pr delta-diag)
+                                                   (point+ min-pr delta-left)))))))))
+  ;; fallback
+  (let* ((center (point* (apply #'point+ polygon)
+                         (/ (length polygon)))))
     (list (point+ center '(-1/2 -1/2))
           (point+ center '(1/2 -1/2))
           (point+ center '(1/2 1/2))

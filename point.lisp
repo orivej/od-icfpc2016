@@ -30,21 +30,22 @@
 (defun polygon-point+ (polygon point)
   (map 'vector #`(point+ % point) polygon))
 
-(defun checked-isqrt (n)
+(defun isqrt? (n)
   (let ((q (isqrt n)))
-    (assert (= n (* q q)))
-    q))
+    (and (= n (* q q))
+         q)))
 
-(defun rsqrt (r)
-  (/ (checked-isqrt (numerator r))
-     (checked-isqrt (denominator r))))
+(defun rsqrt? (r)
+  (let ((q1 (isqrt? (numerator r)))
+        (q2 (isqrt? (denominator r))))
+    (and q1 q2 (/ q1 q2))))
 
 (defun point-distance2 (p1 p2)
   (+ (expt (- (px p1) (px p2)) 2)
      (expt (- (py p1) (py p2)) 2)))
 
-(defun point-distance (p1 p2)
-  (rsqrt (point-distance2 p1 p2)))
+(defun point-distance? (p1 p2)
+  (rsqrt? (point-distance2 p1 p2)))
 
 (defun dot-product (p1 p2)
   (apply #'+ (mapcar #'* p1 p2)))
