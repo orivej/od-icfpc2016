@@ -63,7 +63,7 @@
                      (scale (point/ (point- new-target t1) (point- t2 t1)))
                      (p1 (? points ip1))
                      (p2 (? points ip2))
-                     (new-point (point+ p1 (point* (point- p2 p1) scale)))
+                     (new-point (scale-point-wrt-point p2 p1 scale))
                      (ip (length points)))
                 (vector-push-extend new-target targets)
                 (vector-push-extend new-point points)
@@ -77,16 +77,34 @@
         (:= #1=(? targets k) (reflect-point-wrt-segment #1# segment))))
     progress?))
 
+(defun most-distant-pair (points)
+  (iter
+    (:for p1 :in points)
+    (:for p2 = (iter
+                 (:for p2 :in points)
+                 (:find p2 :max (point-distance2 p1 p2))))
+    (:find (list p1 p2) :max (point-distance2 p1 p2))))
+
+(defun unit-square-bound (points)
+  (let* ((center (point* (apply #'point+ points)
+                         (/ (length points)))))
+    (list (point+ center '(-1/2 -1/2))
+          (point+ center '(1/2 -1/2))
+          (point+ center '(1/2 1/2))
+          (point+ center '(-1/2 1/2)))))
+
 (defun solve-problem (problem)
   (ensure-problem!)
   (assert (convex-problem? problem))
   (let ((solution (new-solution))
+        (points (coerce (? problem :polygons 0) 'list))
         (progress? t))
+    (:= (? solution :targets) (unit-square-bound points))
     (iter
       (:while progress?)
       (:= progress? nil)
       (iter
-        (:for (p1 p2) :on (enclose (? problem :polygons 0)))
+        (:for (p1 p2) :on (enclose points))
         (:while p2)
         (when (solution-fold-left solution (list p1 p2))
           (:= progress? t))))
