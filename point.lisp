@@ -39,9 +39,12 @@
   (/ (checked-isqrt (numerator r))
      (checked-isqrt (denominator r))))
 
+(defun point-distance2 (p1 p2)
+  (+ (expt (- (px p1) (px p2)) 2)
+     (expt (- (py p1) (py p2)) 2)))
+
 (defun point-distance (p1 p2)
-  (rsqrt (+ (expt (- (px p1) (px p2)) 2)
-            (expt (- (py p1) (py p2)) 2))))
+  (rsqrt (point-distance2 p1 p2)))
 
 (defun dot-product (p1 p2)
   (apply #'+ (mapcar #'* p1 p2)))
@@ -63,9 +66,10 @@
 (defun reflect-points-wrt-segment (ps segment)
   (map 'vector #`(reflect-point-wrt-segment % segment) ps))
 
-(defun cross-product (p1 p2)
-  (- (* (px p1) (py p2))
-     (* (py p1) (px p2))))
+(eval-always
+  (defun cross-product (p1 p2)
+    (- (* (px p1) (py p2))
+       (* (py p1) (px p2)))))
 
 (abbr det cross-product)
 
@@ -83,3 +87,9 @@
          (scale (/ (det d1 d2))))
     (p (* scale (det cp (p (px d1) (px d2))))
        (* scale (det cp (p (py d1) (py d2)))))))
+
+(defun scale-point-wrt-point (p origin scale)
+  (point+ origin (point* (point- p origin) scale)))
+
+(defun midpoint (p1 p2)
+  (scale-point-wrt-point p1 p2 1/2))
