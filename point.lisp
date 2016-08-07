@@ -97,3 +97,7 @@
 
 (defun midpoint (p1 p2)
   (scale-point-wrt-point p1 p2 1/2))
+
+(defun square-by-center-and-corner (center corner)
+  (loop :repeat 4 :collect (point+ center corner)
+        :do (setf corner (rotate-left corner))))
