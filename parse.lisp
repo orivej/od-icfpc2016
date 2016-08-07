@@ -52,6 +52,7 @@
     (pathname
      (parse-solution solution))
     (solution
+     (proper-solution! solution)
      solution)))
 
 (defun save-solution (solution path)
