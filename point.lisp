@@ -77,6 +77,9 @@
 (defun clockwise? (p1 p2)
   (minusp (cross-product p1 p2)))
 
+(defun rotate-left (p)
+  (p (- (py p)) (px p)))
+
 (defun intersect-lines (s1 s2)
   (let* ((p1 (? s1 0))
          (p2 (? s1 1))
