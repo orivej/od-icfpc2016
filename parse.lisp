@@ -66,3 +66,15 @@
     (dolist (facet (? solution :facets))
       (format t "~a~{ ~a~}~%" (length facet) facet))
     (print-points (? solution :targets))))
+
+(defun pathname-number (path)
+  (parse-integer (pathname-name path)))
+
+(defun file-numbers (glob)
+  (sort (mapcar #'pathname-number (directory glob)) #'<))
+
+(defun problem-numbers ()
+  (file-numbers (merge-pathnames "*.txt" *problems*)))
+
+(defun solution-numbers ()
+  (file-numbers (merge-pathnames "*.txt" *solutions*)))

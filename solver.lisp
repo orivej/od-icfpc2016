@@ -3,9 +3,9 @@
 
 (defun new-solution ()
   (make-solution
-   :points '((0 0) (0 1) (1 1) (1 0))
+   :points '((0 0) (1 0) (1 1) (0 1))
    :facets '((0 1 2 3))
-   :targets '((0 0) (0 1) (1 1) (1 0))))
+   :targets '((0 0) (1 0) (1 1) (0 1))))
 
 (defun coerce-solution! (solution check convert)
   (dolist (key '(:points :facets :targets))
@@ -93,19 +93,38 @@
           (point+ center '(1/2 1/2))
           (point+ center '(-1/2 1/2)))))
 
+(defun points-within-polygon? (points polygon)
+  (iter
+    (:for (p1 p2) :on (enclose polygon))
+    (:while p2)
+    (:for d = (point- p2 p1))
+    (:always
+      (iter
+        (:for p :in points)
+        (:never (clockwise? d (point- p p1)))))))
+
 (defun solve-problem (problem)
   (ensure-problem!)
-  (assert (convex-problem? problem))
-  (let ((solution (new-solution))
-        (points (coerce (? problem :polygons 0) 'list))
-        (progress? t))
-    (:= (? solution :targets) (unit-square-bound points))
-    (iter
-      (:while progress?)
-      (:= progress? nil)
-      (iter
-        (:for (p1 p2) :on (enclose points))
-        (:while p2)
-        (when (solution-fold-left solution (list p1 p2))
-          (:= progress? t))))
-    solution))
+  (when (convex-problem? problem)
+    (let* ((solution (new-solution))
+           (points (coerce (? problem :polygons 0) 'list))
+           (bound (unit-square-bound points))
+           (progress? t))
+      (when (points-within-polygon? points bound)
+        (:= (solution-targets solution) bound)
+        (iter
+          (:while progress?)
+          (:= progress? nil)
+          (iter
+            (:for (p1 p2) :on (enclose points))
+            (:while p2)
+            (when (solution-fold-left solution (list p1 p2))
+              (:= progress? t))))
+        solution))))
+
+(defun solve-all ()
+  (dolist (n (sort (set-difference (problem-numbers) (solution-numbers)) #'<))
+    (when-let (solution (solve-problem n))
+      (save-solution solution n)
+      (format *trace-output* "~a " n)
+      (force-output *trace-output*))))
