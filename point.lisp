@@ -1,8 +1,9 @@
 (in-package #:od-icfpc2016)
 (named-readtables:in-readtable rutils-readtable)
 
-(defun enclose (seq)
-  (list* (first (last seq)) seq))
+(defun enclose (seq &optional (n 1))
+  (:= seq (coerce seq 'list))
+  (concat (last seq n) seq))
 
 (defun p (x y) (list x y))
 (defun px (p) (first p))

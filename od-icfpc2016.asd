@@ -7,4 +7,4 @@
                (:file "solution")
                (:file "parse")
                (:file "plot")
-               (:file "rotate")))
+               (:file "solver")))
