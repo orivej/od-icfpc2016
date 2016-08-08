@@ -30,6 +30,21 @@
              :while p3
              :never (clockwise? (point- p2 p1) (point- p3 p2)))))
 
+(defun convexify-problem (problem)
+  (let ((polygon (? problem :polygons 0)))
+    (iter
+      (:with repeat? = t)
+      (:while repeat?)
+      (:= repeat? nil)
+      (:= polygon
+          (iter
+            (:for (p1 p2 p3) :on (enclose polygon 2))
+            (:while p3)
+            (if (clockwise? (point- p2 p1) (point- p3 p2))
+                (:= repeat? t)
+                (:collect p2)))))
+    (:= (problem-polygons problem) (list (coerce polygon 'vector)))))
+
 (defun solution-fold-left (solution segment)
   (adjustable-solution! solution)
   (let+ (((&slots-r/o points facets targets) solution)
