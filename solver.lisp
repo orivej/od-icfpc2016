@@ -134,11 +134,10 @@
           (when (and (<= (point-distance2 min-pr max-pr) 1)
                      (<= (point-distance2 min-prl max-prl) 1))
             (let* ((delta-fwd (point* fwd (/ pd)))
-                   (delta-left (p (- (py delta-fwd)) (px delta-fwd)))
-                   (delta-diag (point+ delta-fwd delta-left)))
+                   (delta-left (rotate-left delta-fwd)))
               (return-from unit-square-bound (list min-pr
                                                    (point+ min-pr delta-fwd)
-                                                   (point+ min-pr delta-diag)
+                                                   (point+ min-pr delta-fwd delta-left)
                                                    (point+ min-pr delta-left)))))))))
   ;; fallback
   (let+ ((xs (mapcar #'px polygon))
